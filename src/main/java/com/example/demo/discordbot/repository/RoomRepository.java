@@ -1,6 +1,6 @@
-package com.example.demo.repository;
+package com.example.demo.discordbot.repository;
 
-import com.example.demo.ROOM;
+import com.example.demo.discordbot.ROOM;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
