@@ -1,8 +1,10 @@
-package com.example.demo;
+package com.example.demo.discordbot.controller;
 
+import com.example.demo.discordbot.DiscordBot;
+import com.example.demo.discordbot.ROOM;
 import net.dv8tion.jda.api.entities.Member;
 import org.springframework.web.bind.annotation.*;
-import com.example.demo.repository.RoomRepository;
+import com.example.demo.discordbot.repository.RoomRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -28,32 +30,28 @@ public class WebController {
     @PostMapping("/create-room")
     public String createRoom(@RequestParam String roomId, @RequestParam String ownerId) {
         ROOM room = new ROOM(roomId, ownerId);
-        roomRepository.save(room); // ✅ 정상
-        return "✅ 방 생성 완료!";
+        roomRepository.save(room); //
+        return "방 생성 완료!";
     }
     @PostMapping("/send-message-to-owner")
     public String sendMessageToOwner(@RequestParam String roomId, @RequestParam String message) {
         ROOM room = roomRepository.findById(roomId).orElse(null);
         if (room == null) {
-            return "❌ 해당 방을 찾을 수 없습니다.";
+            return "해당 방을 찾을 수 없습니다.";
         }
 
         discordBot.sendDM(room.getOwnerId(), message);
-        return "✅ 방장에게 메시지 전송 완료!";
+        return "방장에게 메시지 전송 완료!";
     }
 
 
 
 
 
-
-
-
-    // ✅ 버튼 클릭 시 특정 유저에게 DM 보내기
-    @GetMapping("/send-dm")
+    @PostMapping("/send-dm")
     public String sendDM(@RequestParam String userId) {
         discordBot.sendDM(userId, "코드 왜 안됨??" +" ");
-        return "✅ DM 전송 요청 완료!";
+        return "DM 전송 요청 완료!";
     }
 
     @GetMapping("/api/members")
@@ -91,6 +89,6 @@ public class WebController {
                 "나는야\n" +
                 "뉴로우 회고왕\n" +
                 "깔깔까라까라깔");
-        return "✅ 전체 DM 전송 완료!";
+        return "전체 DM 전송 완료!";
     }
 }
