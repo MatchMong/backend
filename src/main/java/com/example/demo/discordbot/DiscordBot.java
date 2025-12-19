@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.security.auth.login.LoginException;
@@ -21,11 +22,12 @@ public class DiscordBot extends ListenerAdapter {
     private JDA jda;
     private final List<Member> memberList = new ArrayList<>();
 
+    @Value("${discord.bot.token}")
+    private String bottoken;
+
     @PostConstruct
     public void startBot() throws LoginException {
-        String TOKEN = "MTQzNTU5Mzc2ODI1NzQ1NDE0MA.GzKqEO.GVsinbVMyxXN9HhTRZUGzvEIJdPMijLfcKrr8c"; // ⚠️ 진짜 토큰 절대 깃허브에 올리지 말 것
-
-        jda = JDABuilder.createDefault(TOKEN,
+        jda = JDABuilder.createDefault(bottoken,
                         GatewayIntent.GUILD_MESSAGES,
                         GatewayIntent.GUILD_MEMBERS)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
