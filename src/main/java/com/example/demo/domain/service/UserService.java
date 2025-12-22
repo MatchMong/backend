@@ -1,0 +1,53 @@
+package com.example.demo.domain.service;
+
+import com.example.demo.domain.RefreshToken;
+import com.example.demo.domain.dto.AddUserRequest;
+import com.example.demo.domain.entity.User;
+import com.example.demo.domain.repository.RefreshTokenRepository;
+import com.example.demo.domain.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@RequiredArgsConstructor
+@Service
+public class UserService {
+
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private final RefreshTokenRepository refreshTokenRepository;
+
+    public Long save(AddUserRequest dto) {
+        return userRepository.save(User.builder()
+                .email(dto.getEmail())
+                .password(bCryptPasswordEncoder.encode(dto.getPassword()))
+                .build()).getId();
+    }
+
+    public User findById(Long userid) {
+        return userRepository.findById(userid)
+                .orElseThrow(()->new IllegalArgumentException("Unexpected user"));
+    }
+
+    @Transactional
+    public User login(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
+
+        if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+        return user;
+    }
+
+    @Transactional
+    public void updateRefreshToken(Long userId, String refreshToken) {
+        RefreshToken token = refreshTokenRepository.findByUserId(userId)
+                .map(entity -> entity.update(refreshToken))
+                .orElse(new RefreshToken(userId, refreshToken));
+
+        refreshTokenRepository.save(token);
+    }
+}

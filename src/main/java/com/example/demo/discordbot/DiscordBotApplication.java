@@ -12,8 +12,5 @@ public class DiscordBotApplication {
         // Spring Boot 실행
         ApplicationContext context = SpringApplication.run(DiscordBotApplication.class, args);
 
-        // DiscordBot Bean 가져와서 JDA 시작
-        DiscordBot bot = context.getBean(DiscordBot.class);
-        bot.startBot();
     }
 }

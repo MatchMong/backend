@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @CrossOrigin(
-        origins = "*",
-        allowedHeaders = "*",
+        origins = "http://localhost:3000",
+        allowedHeaders = {"Content-Type", "ngrok-skip-browser-warning", "Authorization"}, // 명시적으로 추가
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS}
 )
 
@@ -49,8 +49,9 @@ public class WebController {
 
 
     @PostMapping("/send-dm")
-    public String sendDM(@RequestParam String userId) {
-        discordBot.sendDM(userId, "코드 왜 안됨??" +" ");
+    public String sendDM(@RequestBody Map<String,String> body) {
+        String userId = body.get("userId");
+        discordBot.sendDM(userId, "왜 안됨?"+" ");
         return "DM 전송 요청 완료!";
     }
 

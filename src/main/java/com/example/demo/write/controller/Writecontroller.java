@@ -1,4 +1,3 @@
-/*
 package com.example.demo.write.controller;
 
 import com.example.demo.write.entity.room;
@@ -43,4 +42,3 @@ public class Writecontroller {
     }
 
 }
-*/

@@ -3,6 +3,7 @@ package com.example.demo.domain.service;
 import com.example.demo.domain.entity.User;
 import com.example.demo.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +14,8 @@ public class UserDetailService implements UserDetailsService {
 
 
     @Override
-    public User loadUserByUsername(String email) {
+    public UserDetails loadUserByUsername(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException((email)));
+                .orElseThrow(() -> new IllegalArgumentException(email));
     }
 }
