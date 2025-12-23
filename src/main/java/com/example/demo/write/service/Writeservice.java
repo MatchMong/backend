@@ -1,3 +1,4 @@
+/*
 package com.example.demo.write.service;
 
 import org.springframework.stereotype.Service;
@@ -33,3 +34,4 @@ public class Writeservice {
     }
 
 }
+*/

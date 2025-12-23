@@ -25,11 +25,19 @@ public class User implements UserDetails{
         @Column(name = "password")
         private String password;
 
+        @Column(name = "major")
+        private String major;
+
         @Builder
         public User(String email, String password, String auth){
             this.email = email;
             this.password = password;
+            this.major = major;
         }
+
+    public void updateMajor(String major) {
+        this.major = major;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

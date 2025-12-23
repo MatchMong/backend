@@ -8,21 +8,22 @@ import com.example.demo.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     private final RefreshTokenRepository refreshTokenRepository;
 
     public Long save(AddUserRequest dto) {
         return userRepository.save(User.builder()
                 .email(dto.getEmail())
-                .password(bCryptPasswordEncoder.encode(dto.getPassword()))
+                .password(passwordEncoder.encode(dto.getPassword()))
                 .build()).getId();
     }
 
@@ -36,7 +37,7 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
 
-        if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         return user;
@@ -49,5 +50,18 @@ public class UserService {
                 .orElse(new RefreshToken(userId, refreshToken));
 
         refreshTokenRepository.save(token);
+    }
+
+    @Transactional
+    public User updateMajor(Long userId, String major) {
+        User user = userRepository.findById(userId).orElseThrow();
+        user.updateMajor(normalize(major));
+        return user;
+    }
+
+    private String normalize(String v) {
+        if (v == null) return null;
+        String t = v.trim();
+        return t.isBlank() ? null : t;
     }
 }
