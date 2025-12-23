@@ -1,5 +1,6 @@
 package com.example.demo.domain.controller;
 
+import com.example.demo.domain.dto.PasswordVerifyRequest;
 import com.example.demo.global.config.jwt.TokenProvider;
 import com.example.demo.domain.dto.AddUserRequest;
 import com.example.demo.domain.dto.LoginRequest;
@@ -42,27 +43,43 @@ public class UserApiController {
 
     @PostMapping("/signup/send-code")
     public ResponseEntity<String> sendCode(@RequestBody AddUserRequest request) {
-        // 1. 이메일 주소 확인
         String email = request.getEmail();
         if (email == null || email.isEmpty()) {
             return ResponseEntity.badRequest().body("이메일을 입력해주세요.");
         }
-
-        // 2. 메일 발송
         mailService.sendVerificationCode(email);
-
         return ResponseEntity.ok("인증 번호가 발송되었습니다.");
+    }
+
+    @PostMapping("/find-password/send-code")
+    public ResponseEntity<String> findPasswordSendCode(@RequestBody AddUserRequest request) {
+        try {
+            mailService.sendVerificationCode(request.getEmail());
+            return ResponseEntity.ok("인증 번호가 발송되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+    @PostMapping("/find-password/verify")
+    public ResponseEntity<String> findPasswordVerify(@RequestBody PasswordVerifyRequest request) {
+        System.out.println("인증 요청 발생: " + request.getEmail());
+
+        try {
+            mailService.verifyTemporaryPassword(request.getEmail(), request.getVerificationCode());
+            return ResponseEntity.ok("인증 성공! 새로운 임시 비밀번호가 메일로 발송되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody AddUserRequest request) {
-        // 마지막으로 한 번 더 확인 (보안상 중요!)
+        System.out.println("저장하려는 이메일: " + request.getEmail());
         if (!mailService.verifyCode(request.getEmail(), request.getVerificationCode())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("인증 세션이 만료되었거나 번호가 틀립니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("인증 정보가 유효하지 않습니다.");
         }
-
         userService.save(request);
-        return ResponseEntity.ok("회원가입이 완료되었습니다.");
+        return ResponseEntity.ok("회원가입 완료");
     }
 
 

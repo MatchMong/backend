@@ -9,27 +9,37 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Table
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
+@Table(name = "users")
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class User implements UserDetails{
         @Id
-        @GeneratedValue
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "id",updatable = false)
         private Long id;
 
         @Column(name = "email", nullable = false, unique = true)
         private String email;
 
-        @Column(name = "password")
+        @Column(name = "password", nullable = false)
         private String password;
 
-        @Builder
-        public User(String email, String password, String auth){
-            this.email = email;
-            this.password = password;
-        }
+        @Column(name = "discord_id")
+        private String discordId;
+
+        @Column(name = "major")
+        private String major;
+
+        @Column(name = "selfwrite")
+        private String selfwrite;
+
+
+    public void updateMajor(String major) {
+        this.major = major;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -41,29 +51,13 @@ public class User implements UserDetails{
         return this.email;
     }
 
-    @Override
-    public String getPassword() {
-        return this.password;
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    @Override public boolean isAccountNonExpired() { return true; }
+    @Override public boolean isAccountNonLocked() { return true; }
+    @Override public boolean isCredentialsNonExpired() { return true; }
+    @Override public boolean isEnabled() { return true; }
 }
 

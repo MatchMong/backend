@@ -1,20 +1,13 @@
 package com.example.demo.domain.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
-public class AddUserRequest {
+public class PasswordVerifyRequest {
     private String email;
-    private String password;
-    private String major;
-    private String discordId;
     private String verificationCode;
-    private String selfwrite;
 }
-
-

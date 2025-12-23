@@ -26,20 +26,12 @@ public class WebController {
         this.roomRepository = roomRepository;
     }
 
-
-    @PostMapping("/create-room")
-    public String createRoom(@RequestParam String roomId, @RequestParam String ownerId) {
-        ROOM room = new ROOM(roomId, ownerId);
-        roomRepository.save(room); //
-        return "방 생성 완료!";
-    }
-    @PostMapping("/send-message-to-owner")
+    @PostMapping("/send-message-to-owner")//이게 방장 가입
     public String sendMessageToOwner(@RequestParam String roomId, @RequestParam String message) {
         ROOM room = roomRepository.findById(roomId).orElse(null);
         if (room == null) {
             return "해당 방을 찾을 수 없습니다.";
         }
-
         discordBot.sendDM(room.getOwnerId(), message);
         return "방장에게 메시지 전송 완료!";
     }

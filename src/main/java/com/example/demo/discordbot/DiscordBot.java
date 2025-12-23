@@ -34,37 +34,35 @@ public class DiscordBot extends ListenerAdapter {
                 .addEventListeners(this)
                 .build();
 
-        System.out.println("🚀 Discord 봇 실행 중...");
+        System.out.println("Discord 봇 실행 중...");
     }
 
 
 
     @Override
     public void onReady(ReadyEvent event) {
-        System.out.println("✅ 봇이 준비되었습니다!");
-        System.out.println("📋 봇이 속한 서버 목록:");
+        System.out.println("봇이 준비되었습니다!");
+        System.out.println("봇이 속한 서버 목록:");
 
         for (Guild g : event.getJDA().getGuilds()) {
             System.out.println("- " + g.getName() + " | ID: " + g.getId());
         }
 
-        // ✅ 여기서 event.getJDA() 사용
-        String GUILD_ID = "1414584088878387260"; // ✅ 실제 서버 ID로 바꾸기
+        String GUILD_ID = "1414584088878387260";
         Guild guild = event.getJDA().getGuildById(GUILD_ID);
 
         if (guild != null) {
             guild.loadMembers().onSuccess(members -> {
                 memberList.clear();
                 memberList.addAll(members);
-                System.out.println("✅ 서버 멤버 불" +
-                        "러오기 완료 (" + members.size() + "명)");
+                System.out.println("서버 멤버 불러오기 완료 (" + members.size() + "명)");
                 for (Member m : members) {
                     System.out.println(m.getUser().getName() + " | " + m.getId());
 
                 }
             });
         } else {
-            System.out.println("❌ 서버를 찾을 수 없습니다. GUILD_ID 확인하세요.");
+            System.out.println("서버를 찾을 수 없습니다. GUILD_ID 확인하세요.");
         }
     }
 
@@ -72,9 +70,9 @@ public class DiscordBot extends ListenerAdapter {
         User user = jda.getUserById(userId);
         if (user != null) {
             user.openPrivateChannel().queue(ch -> ch.sendMessage(message).queue());
-            System.out.println("📩 " + user.getName() + " 에게 DM 보냄: " + message);
+            System.out.println(user.getName() + " 에게 DM 보냄: " + message);
         } else {
-            System.out.println("❌ 유저를 찾을 수 없습니다: " + userId);
+            System.out.println("유저를 찾을 수 없습니다: " + userId);
         }
     }
 
@@ -86,7 +84,7 @@ public class DiscordBot extends ListenerAdapter {
 
     public void sendDMToAll(String message) {
         if (memberList.isEmpty()) {
-            System.out.println("⚠️ 멤버 목록이 비어 있습니다. 봇이 아직 서버 멤버를 불러오지 못했을 수 있습니다.");
+            System.out.println("멤버 목록이 비어 있습니다. 봇이 아직 서버 멤버를 불러오지 못했을 수 있습니다.");
             return;
         }
 
@@ -95,12 +93,12 @@ public class DiscordBot extends ListenerAdapter {
             if (!user.isBot()) { // 봇 계정 제외
                 user.openPrivateChannel().queue(channel -> {
                     channel.sendMessage(message).queue();
-                    System.out.println("📩 " + user.getName() + " 에게 DM 보냄");
+                    System.out.println(user.getName() + " 에게 DM 보냄");
                 });
             }
         }
 
-        System.out.println("✅ 모든 유저에게 DM 전송 완료!");
+        System.out.println("모든 유저에게 DM 전송 완료!");
     }
 
 }
