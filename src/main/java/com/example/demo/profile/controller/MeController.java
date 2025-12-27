@@ -18,7 +18,6 @@ public class MeController {
     private final MeService meService;
 
     @GetMapping("/me")
-
     public List<MeDto> me(@AuthenticationPrincipal com.example.demo.domain.entity.User user) {
         String major = user.getMajor();
         if (major == null || major.isBlank()) major = "무전공";

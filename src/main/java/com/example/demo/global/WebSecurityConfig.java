@@ -1,5 +1,6 @@
 package com.example.demo.global; // 패키지 경로 확인
 
+import com.example.demo.global.config.TokenAuthenticationFilter;
 import com.example.demo.global.config.jwt.TokenProvider; // 실제 경로로 수정
 // 만약 JwtAuthenticationFilter를 만드셨다면 이것도 임포트하세요
 // import com.example.demo.global.config.jwt.JwtAuthenticationFilter;
@@ -39,6 +40,7 @@ public class WebSecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(org.springframework.web.cors.CorsUtils::isPreFlightRequest).permitAll()
                         .requestMatchers("/login", "/signup/**", "/api/signup/**", "/find-password/**", "/error").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -56,8 +58,8 @@ public class WebSecurityConfig {
                         })
                 );
 
-        // ✅ 이 부분이 핵심입니다! JwtAuthenticationFilter가 구현되어 있어야 합니다.
-        // http.addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new TokenAuthenticationFilter(tokenProvider),
+                UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -98,12 +98,11 @@ public class UserApiController {
         return ResponseEntity.ok(new LoginResponse(accessToken, refreshToken));
     }
 
-    @PostMapping("/api/logout") // [수정] Get -> Post, React 방식 응답
-    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            new SecurityContextLogoutHandler().logout(request, response, auth);
-        }
+    @PostMapping("/api/logout")
+    public ResponseEntity<Void> logout() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        userService.deleteRefreshTokenByEmail(email);
+        SecurityContextHolder.clearContext();
         return ResponseEntity.ok().build();
     }
 }

@@ -55,4 +55,12 @@ public class UserService {
 
         refreshTokenRepository.save(token);
     }
+
+    @Transactional
+    public void deleteRefreshTokenByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
+
+        refreshTokenRepository.deleteByUserId(user.getId());
+    }
 }

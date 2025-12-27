@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoominputRequest {
-    private String roomid;
+public class discordmessageRequest {
+    private Long roomid;
     private String message;
 }

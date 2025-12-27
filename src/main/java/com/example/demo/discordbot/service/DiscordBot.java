@@ -1,4 +1,4 @@
-package com.example.demo.discordbot;
+package com.example.demo.discordbot.service;
 
 import jakarta.annotation.PostConstruct;
 import net.dv8tion.jda.api.JDA;

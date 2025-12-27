@@ -1,10 +1,13 @@
 package com.example.demo.discordbot.controller;
 
-import com.example.demo.discordbot.DiscordBot;
-import com.example.demo.discordbot.ROOM;
+import com.example.demo.discordbot.service.DiscordBot;
+import com.example.demo.discordbot.entity.ROOM;
+import com.example.demo.domain.entity.User;
 import net.dv8tion.jda.api.entities.Member;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import com.example.demo.discordbot.repository.RoomRepository;
+import com.example.demo.discordbot.dto.*;
 
 import java.util.List;
 import java.util.Map;
@@ -26,14 +29,23 @@ public class WebController {
         this.roomRepository = roomRepository;
     }
 
-    @PostMapping("/send-message-to-owner")//이게 방장 가입
-    public String sendMessageToOwner(@RequestParam String roomId, @RequestParam String message) {
-        ROOM room = roomRepository.findById(roomId).orElse(null);
-        if (room == null) {
-            return "해당 방을 찾을 수 없습니다.";
-        }
-        discordBot.sendDM(room.getOwnerId(), message);
-        return "방장에게 메시지 전송 완료!";
+    @PostMapping("/send-message-to-owner")
+    public String sendMessageToOwner(
+            @AuthenticationPrincipal User user, // 1. 토큰에서 "누가 보냈는지" 정보를 바로 가져옴
+            @RequestBody discordmessageRequest request
+    ) {
+        // 2. DB에서 방 정보를 가져옴
+        ROOM room = roomRepository.findById(request.getRoomid())
+                .orElseThrow(() -> new RuntimeException("방을 찾을 수 없습니다."));
+
+        // 3. (선택사항) 보내는 사람의 정보를 메시지에 추가 (누가 보냈는지 방장이 알아야 하니까요)
+        String senderInfo = "보낸 사람: " + user.getEmail() + " (" + user.getDiscordId() + ")\n";
+        String fullMessage = senderInfo + "내용: " + request.getMessage();
+
+        // 4. 방에 저장된 '진짜 방장 ID'로 메시지 전송
+        discordBot.sendDM(room.getOwnerId(), fullMessage);
+
+        return "방장(" + room.getOwnerId() + ")에게 메시지 전송 완료!";
     }
 
 
