@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class RoomRequest {
     private String roomtitle;
     private String roomwrite;
+    private int maxParticipants;
 }

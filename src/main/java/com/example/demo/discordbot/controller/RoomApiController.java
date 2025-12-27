@@ -39,9 +39,8 @@ public class RoomApiController {
     public ResponseEntity<String> joinRoom(
             @AuthenticationPrincipal User loginUser,
             @PathVariable Long roomId) {
-
-        // 1. 참여 기록 저장
-        roomService.joinRoom(roomId, loginUser);
+        try {
+            roomService.joinRoom(roomId, loginUser);
 
         // 2. 방장 정보 가져오기
         ROOM room = roomService.findById(roomId);
@@ -51,7 +50,11 @@ public class RoomApiController {
                 room.getRoomtitle(), loginUser.getNickname());
         discordBot.sendDM(room.getOwnerId(), message);
 
-        return ResponseEntity.ok("방 참여 및 방장 알림 전송 완료");
+            return ResponseEntity.ok("방 참여 및 방장 알림 전송 완료");
+        } catch (RuntimeException e) {
+            // "정원이 가득 찼습니다" 같은 에러 메시지를 클라이언트에 보냄
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping("/{roomId}/participants")
@@ -79,5 +82,25 @@ public class RoomApiController {
         discordBot.sendDM(room.getOwnerId(), finalMessage);
 
         return ResponseEntity.ok("방장에게 메시지를 성공적으로 보냈습니다!");
+    }
+    //방 수정
+    @PutMapping("/{roomId}")
+    public ResponseEntity<ROOM> updateRoom(
+            @AuthenticationPrincipal User loginUser,
+            @PathVariable Long roomId,
+            @RequestBody RoomRequest request) {
+
+        ROOM updatedRoom = roomService.update(roomId, request, loginUser.getDiscordId());
+        return ResponseEntity.ok(updatedRoom);
+    }
+
+    //방 삭제
+    @DeleteMapping("/{roomId}")
+    public ResponseEntity<Void> deleteRoom(
+            @AuthenticationPrincipal User loginUser,
+            @PathVariable Long roomId) {
+
+        roomService.delete(roomId, loginUser.getDiscordId());
+        return ResponseEntity.noContent().build(); // 성공 시 데이터 없이 204 응답
     }
 }

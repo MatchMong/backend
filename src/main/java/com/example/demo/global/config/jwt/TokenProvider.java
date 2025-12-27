@@ -1,6 +1,7 @@
 package com.example.demo.global.config.jwt;
 
 import com.example.demo.domain.entity.User;
+import com.example.demo.domain.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
@@ -21,6 +22,7 @@ import java.util.Set;
 public class TokenProvider {
 
     private final JwtProperties jwtProperties;
+    private final UserRepository userRepository;
 
     public String generateToken(User user, Duration expiredAt) {
         Date now = new Date();
@@ -54,7 +56,10 @@ public class TokenProvider {
         Claims claims = getClaims(token);
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
 
-        return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject(), "",authorities),token,authorities);
+        User user = userRepository.findByEmail(claims.getSubject())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        return new UsernamePasswordAuthenticationToken(user, token, authorities);
     }
 
     public Long getUserId(String token) {

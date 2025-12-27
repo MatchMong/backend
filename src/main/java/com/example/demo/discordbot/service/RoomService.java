@@ -1,6 +1,6 @@
 package com.example.demo.discordbot.service;
 
-import com.example.demo.discordbot.ParticipantRepository; // 경로 확인 필요
+import com.example.demo.discordbot.repository.ParticipantRepository; // 경로 확인 필요
 import com.example.demo.discordbot.entity.ROOM;
 import com.example.demo.discordbot.dto.RoomRequest;
 import com.example.demo.discordbot.entity.RoomParticipant;
@@ -29,16 +29,56 @@ public class RoomService {
                 .build());
     }
 
-    // 2. 방 참가 로직
     @Transactional
-    public void joinRoom(Long roomId, User user) {
-        ROOM room = findById(roomId);
+    public ROOM update(Long roomId, RoomRequest request, String loginUserId) {
+        ROOM room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("방을 찾을 수 없습니다."));
 
-        RoomParticipant participant = RoomParticipant.builder()
-                .room(room)
-                .userDiscordId(user.getDiscordId())
-                .userNickname(user.getNickname()) // User 엔티티에 nickname 필드가 있어야 함
-                .build();
+        if (!room.getOwnerId().equals(loginUserId)) {
+            throw new RuntimeException("수정 권한이 없습니다.");
+        }
+
+        room.setRoomtitle(request.getRoomtitle());
+        room.setRoomwrite(request.getRoomwrite());
+        // 엔티티에 세터(Setter)나 수정 메서드가 있어야 합니다.
+        return room;
+    }
+
+    @Transactional
+    public void delete(Long roomId, String loginUserId) {
+        ROOM room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("방을 찾을 수 없습니다."));
+
+        if (!room.getOwnerId().equals(loginUserId)) {
+            throw new RuntimeException("삭제 권한이 없습니다.");
+        }
+
+        roomRepository.delete(room);
+    }
+    // RoomService.java 안의 joinRoom 메서드 (하나만 남기세요!)
+
+    @Transactional
+    public void joinRoom(Long roomId, User loginUser) {
+        // 1. 방 존재 여부 확인
+        ROOM room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 방입니다."));
+
+        if (participantRepository.existsByRoom_RoomIdAndUserDiscordId(roomId, loginUser.getDiscordId())) {
+            throw new RuntimeException("이미 이 방에 참여 신청을 하셨습니다!");
+        }
+        // 2. 현재 참여 인원수 체크 (새로 추가한 로직)
+        long currentCount = participantRepository.countByRoom_RoomId(roomId);
+
+        // 3. 인원 제한 확인
+        if (currentCount >= room.getMaxParticipants()) {
+            throw new RuntimeException("정원이 초과되었습니다. (최대 인원: " + room.getMaxParticipants() + "명)");
+        }
+
+        // 4. 참여 정보 저장
+        RoomParticipant participant = new RoomParticipant();
+        participant.setRoom(room);
+        participant.setUserNickname(loginUser.getNickname());
+        participant.setUserDiscordId(loginUser.getDiscordId());
 
         participantRepository.save(participant);
     }

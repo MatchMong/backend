@@ -30,8 +30,18 @@ public class ROOM {
     @Column(name = "roomwrite",nullable = false)
     private String roomwrite;
 
+    @Column(nullable = false)
+    private int maxParticipants;
+
 
     public String getOwnerId() {
         return this.ownerId;
+    }
+    public void setRoomtitle(String roomtitle) {
+        this.roomtitle = roomtitle;
+    }
+
+    public void setRoomwrite(String roomwrite) {
+        this.roomwrite = roomwrite;
     }
 }
