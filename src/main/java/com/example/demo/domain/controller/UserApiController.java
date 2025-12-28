@@ -108,8 +108,9 @@ public class UserApiController {
     public ResponseEntity<List<UserProfileResponse>> getAllUserProfiles() {
         List<UserProfileResponse> profiles = userService.findAllUsers().stream()
                 .map(user -> new UserProfileResponse(
-                        user.getNickname(),
-                        user.getMajor() != null ? user.getMajor() : "미등록"
+                        user.getId(),       // 1. ID
+                        user.getNickname(), // 2. 닉네임
+                        user.getMajor() != null ? user.getMajor() : "미등록" // 3. 전공
                 ))
                 .collect(Collectors.toList());
 
