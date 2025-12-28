@@ -1,9 +1,6 @@
 package com.example.demo.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,8 +12,8 @@ import lombok.Setter;
 public class RefreshToken {
 
     @Id
-    @GeneratedValue
-    @Column(name = "id", updatable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // 여기를 수정했습니다!
+    @Column(name = "id", updatable = false)
     private Long id;
 
     @Column(name = "user__id", updatable = false, unique = true)
