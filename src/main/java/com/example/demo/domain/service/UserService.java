@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -62,5 +63,9 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
 
         refreshTokenRepository.deleteByUserId(user.getId());
+    }
+
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
     }
 }

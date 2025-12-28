@@ -28,7 +28,7 @@ public class RoomApiController {
             @AuthenticationPrincipal User loginUser,
             @RequestBody RoomRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(roomService.save(request, loginUser.getDiscordId()));
+                .body(roomService.save(request, loginUser.getDiscordId(),loginUser.getNickname()));
     }
     @GetMapping
     public ResponseEntity<List<ROOM>> getAllRooms() {
@@ -102,5 +102,22 @@ public class RoomApiController {
 
         roomService.delete(roomId, loginUser.getDiscordId());
         return ResponseEntity.noContent().build(); // 성공 시 데이터 없이 204 응답
+    }
+
+    @DeleteMapping("/{roomId}/participants/{targetDiscordId}")
+    public ResponseEntity<String> kickParticipant(
+            @AuthenticationPrincipal User loginUser,
+            @PathVariable Long roomId,
+            @PathVariable String targetDiscordId) {
+
+        try {
+            roomService.kickParticipant(roomId, targetDiscordId, loginUser.getDiscordId());
+
+            discordBot.sendDM(targetDiscordId, "방장에 의해 방에서 제외되었습니다.");
+
+            return ResponseEntity.ok("추방 완료");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
     }
 }

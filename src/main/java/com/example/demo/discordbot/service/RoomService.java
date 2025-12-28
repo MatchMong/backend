@@ -21,11 +21,13 @@ public class RoomService {
 
     // 1. 방 생성 (토큰의 Discord ID 저장)
     @Transactional
-    public ROOM save(RoomRequest dto, String ownerDiscordId) {
+    public ROOM save(RoomRequest dto, String ownerDiscordId, String ownernickname) {
         return roomRepository.save(ROOM.builder()
                 .ownerId(ownerDiscordId)
+                .nickname(ownernickname)
                 .roomtitle(dto.getRoomtitle())
                 .roomwrite(dto.getRoomwrite())
+                .maxParticipants(dto.getMaxParticipants())
                 .build());
     }
 
@@ -98,5 +100,19 @@ public class RoomService {
     @Transactional(readOnly = true)
     public List<ROOM> findAll() {
         return roomRepository.findAll();
+    }
+
+    @Transactional
+    public void kickParticipant(Long roomId, String targetDiscordId, String ownerId) {
+        // 1. 방 정보를 가져와서 방장이 맞는지 확인
+        ROOM room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("방을 찾을 수 없습니다."));
+
+        if (!room.getOwnerId().equals(ownerId)) {
+            throw new RuntimeException("방장만 추방 권한이 있습니다.");
+        }
+
+        // 2. 참여자 테이블에서 삭제 (이 유저가 삭제되면 다시 joinRoom이 가능해집니다)
+        participantRepository.deleteByRoom_RoomIdAndUserDiscordId(roomId, targetDiscordId);
     }
 }

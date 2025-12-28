@@ -4,6 +4,8 @@ import com.example.demo.discordbot.service.DiscordBot;
 import com.example.demo.discordbot.entity.ROOM;
 import com.example.demo.domain.entity.User;
 import net.dv8tion.jda.api.entities.Member;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import com.example.demo.discordbot.repository.RoomRepository;
@@ -29,6 +31,13 @@ public class WebController {
         this.roomRepository = roomRepository;
     }
 
+    @GetMapping("/api/user/discord-id")
+    public ResponseEntity<String> getMyDiscowrdId(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        String discordId = user.getDiscordId();
+        return ResponseEntity.ok(discordId);
+    }
+
     @PostMapping("/send-message-to-owner")
     public String sendMessageToOwner(
             @AuthenticationPrincipal User user, // 1. 토큰에서 "누가 보냈는지" 정보를 바로 가져옴
@@ -47,6 +56,7 @@ public class WebController {
 
         return "방장(" + room.getOwnerId() + ")에게 메시지 전송 완료!";
     }
+
 
 
 

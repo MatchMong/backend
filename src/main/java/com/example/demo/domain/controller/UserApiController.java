@@ -1,10 +1,7 @@
 package com.example.demo.domain.controller;
 
-import com.example.demo.domain.dto.PasswordVerifyRequest;
+import com.example.demo.domain.dto.*;
 import com.example.demo.global.config.jwt.TokenProvider;
-import com.example.demo.domain.dto.AddUserRequest;
-import com.example.demo.domain.dto.LoginRequest;
-import com.example.demo.domain.dto.LoginResponse;
 import com.example.demo.domain.entity.User;
 import com.example.demo.domain.service.MailService;
 import com.example.demo.domain.service.UserService;
@@ -19,6 +16,8 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -104,5 +103,32 @@ public class UserApiController {
         userService.deleteRefreshTokenByEmail(email);
         SecurityContextHolder.clearContext();
         return ResponseEntity.ok().build();
+    }
+    @GetMapping("/api/users/profiles")
+    public ResponseEntity<List<UserProfileResponse>> getAllUserProfiles() {
+        List<UserProfileResponse> profiles = userService.findAllUsers().stream()
+                .map(user -> new UserProfileResponse(
+                        user.getNickname(),
+                        user.getMajor() != null ? user.getMajor() : "미등록"
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(profiles);
+    }
+    @GetMapping("/api/users/{userId}")
+    public ResponseEntity<UserDetailResponse> getUserDetail(@PathVariable Long userId) {
+        // 1. ID로 유저 정보 조회
+        User user = userService.findById(userId);
+
+        // 2. 필요한 정보만 DTO에 담아서 반환
+        UserDetailResponse response = new UserDetailResponse(
+                user.getNickname(),
+                user.getMajor(),
+                user.getEmail(),
+                user.getDiscordId(),
+                user.getSelfwrite()
+        );
+
+        return ResponseEntity.ok(response);
     }
 }
