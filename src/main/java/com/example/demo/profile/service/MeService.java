@@ -30,6 +30,7 @@ public class MeService {
                             .major(dto.getMajor())
                             .discordId(dto.getDiscordId())
                             .selfwrite(dto.getSelfwrite())
+                            .nickname(dto.getNickname())
                             .password("temp_pwd") // 필수값인 경우 초기값 설정
                             .build();
                     return userRepository.save(newUser).getId();

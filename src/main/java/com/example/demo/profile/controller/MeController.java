@@ -1,6 +1,8 @@
 package com.example.demo.profile.controller;
 
+import com.example.demo.discordbot.service.DiscordBot;
 import com.example.demo.domain.dto.AddUserRequest;
+import com.example.demo.domain.entity.User;
 import com.example.demo.profile.dto.MeDto;
 import com.example.demo.profile.service.MeService;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +18,17 @@ import java.util.List;
 public class MeController {
 
     private final MeService meService;
+    private final DiscordBot discordBot;
 
     @GetMapping("/me")
-    public List<MeDto> me(@AuthenticationPrincipal com.example.demo.domain.entity.User user) {
+    public List<MeDto> me(@AuthenticationPrincipal com.example.demo.domain.entity.User user, User loginUser) {
         String major = user.getMajor();
+        String nickname =discordBot.getNicknameByDiscordId(loginUser.getDiscordId());
+
+
         if (major == null || major.isBlank()) major = "무전공";
         return List.of(
-                new MeDto(user.getId(), major, user.getEmail(), user.getDiscordId(), user.getSelfwrite())
+                new MeDto(user.getId(), major, user.getEmail(), user.getDiscordId(), user.getSelfwrite(), nickname)
         );
     }
 
