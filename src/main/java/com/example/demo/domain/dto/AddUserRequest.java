@@ -15,6 +15,7 @@ public class AddUserRequest {
     private String discordId;
     private String verificationCode;
     private String selfwrite;
+    private String nickname;
 }
 
 

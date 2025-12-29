@@ -33,8 +33,14 @@ public class User implements UserDetails{
         @Column(name = "major")
         private String major;
 
+        @Column(name = "nicknameid")
+        private String nicknameid;
+
         @Column(name = "selfwrite")
         private String selfwrite;
+
+        @Column(name = "nickname")
+        private String nickname;
 
 
     public void updateMajor(String major) {
@@ -60,8 +66,10 @@ public class User implements UserDetails{
     @Override public boolean isCredentialsNonExpired() { return true; }
     @Override public boolean isEnabled() { return true; }
 
+
     public String getNickname() {
-        return null;
+        return this.nickname; // "단무지"를 반환
     }
+
 }
 

@@ -44,4 +44,5 @@ public class ROOM {
     public void setRoomwrite(String roomwrite) {
         this.roomwrite = roomwrite;
     }
+
 }

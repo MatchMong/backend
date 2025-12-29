@@ -1,5 +1,6 @@
 package com.example.demo.domain.service;
 
+import com.example.demo.discordbot.service.DiscordBot;
 import com.example.demo.domain.RefreshToken;
 import com.example.demo.domain.dto.AddUserRequest;
 import com.example.demo.domain.entity.User;
@@ -23,12 +24,18 @@ public class UserService {
     private final MailService mailService;
 
     private final RefreshTokenRepository refreshTokenRepository;
+    private final DiscordBot discordBot;
 
     public Long save(AddUserRequest dto) {
+
+        String snowflakeId = discordBot.getUserIdByName(dto.getDiscordId());
+
         return userRepository.save(User.builder()
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .discordId(dto.getDiscordId())
+                .nickname(dto.getNickname())
+                .nicknameid(snowflakeId)
                 .build()).getId();
     }
 

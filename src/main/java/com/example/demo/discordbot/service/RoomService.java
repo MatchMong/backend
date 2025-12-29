@@ -22,6 +22,11 @@ public class RoomService {
     // 1. 방 생성 (토큰의 Discord ID 저장)
     @Transactional
     public ROOM save(RoomRequest dto, String ownerDiscordId, String ownernickname) {
+        if (ownerDiscordId == null || ownerDiscordId.trim().isEmpty()) {
+            throw new RuntimeException("방장의 디스코드 ID가 올바르지 않습니다. 다시 로그인해주세요.");
+        }
+
+        System.out.println("DEBUG: 방 생성 시도 - ID: [" + ownerDiscordId + "], Nickname: " + ownernickname);
         return roomRepository.save(ROOM.builder()
                 .ownerId(ownerDiscordId)
                 .nickname(ownernickname)

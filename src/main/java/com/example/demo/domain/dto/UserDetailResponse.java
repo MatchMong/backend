@@ -12,3 +12,4 @@ public class UserDetailResponse {
     private String discordId;
     private String selfwrite; // 유저가 작성한 자기소개
 }
+
