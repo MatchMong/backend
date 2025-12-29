@@ -11,9 +11,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
+import com.example.demo.discordbot.service.DiscordBot;
 
 import java.time.Duration;
 import java.util.List;
@@ -104,12 +106,15 @@ public class UserApiController {
         SecurityContextHolder.clearContext();
         return ResponseEntity.ok().build();
     }
+
+    private final DiscordBot discordBot;
     @GetMapping("/api/users/profiles")
-    public ResponseEntity<List<UserProfileResponse>> getAllUserProfiles() {
+    public ResponseEntity<List<UserProfileResponse>> getAllUserProfiles(@AuthenticationPrincipal User loginUser) {
+        String nickname =discordBot.getNicknameByDiscordId(loginUser.getDiscordId());
         List<UserProfileResponse> profiles = userService.findAllUsers().stream()
                 .map(user -> new UserProfileResponse(
                         user.getId(),       // 1. ID
-                        user.getNickname(), // 2. 닉네임
+                        nickname, // 2. 닉네임
                         user.getMajor() != null ? user.getMajor() : "미등록" // 3. 전공
                 ))
                 .collect(Collectors.toList());
