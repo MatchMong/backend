@@ -34,6 +34,7 @@ public class UserService {
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .discordId(dto.getDiscordId())
                 .nickname(dto.getNickname())
+                .major(dto.getMajor())
                 .nicknameid(snowflakeId)
                 .build()).getId();
     }

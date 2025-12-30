@@ -107,7 +107,6 @@ public class UserApiController {
         return ResponseEntity.ok().build();
     }
 
-    private final DiscordBot discordBot;
     @GetMapping("/api/users/profiles")
     public ResponseEntity<List<UserProfileResponse>> getAllUserProfiles() {
                 List<UserProfileResponse> profiles = userService.findAllUsers().stream()
