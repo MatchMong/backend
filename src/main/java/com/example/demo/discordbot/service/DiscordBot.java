@@ -122,8 +122,10 @@ public class DiscordBot extends ListenerAdapter {
     }
 
     public String getNicknameByDiscordId(String discordId) {
+        if (discordId == null || discordId.isEmpty()) {
+            return "미연동 사용자"; // null일 경우 trim()을 호출하지 않고 안전하게 리턴
+        }
         String cleanId = discordId.trim();
-
         // 1. 숫자인지 확인 (디스코드 ID는 숫자 형태의 Snowflake여야 함)
         if (!cleanId.matches("\\d+")) {
             // 숫자가 아니라면(사용자명이라면) memberList에서 이름으로 직접 찾기 시도

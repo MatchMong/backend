@@ -110,11 +110,10 @@ public class UserApiController {
     private final DiscordBot discordBot;
     @GetMapping("/api/users/profiles")
     public ResponseEntity<List<UserProfileResponse>> getAllUserProfiles(@AuthenticationPrincipal User loginUser) {
-        String nickname =discordBot.getNicknameByDiscordId(loginUser.getDiscordId());
-        List<UserProfileResponse> profiles = userService.findAllUsers().stream()
+                List<UserProfileResponse> profiles = userService.findAllUsers().stream()
                 .map(user -> new UserProfileResponse(
                         user.getId(),       // 1. ID
-                        nickname, // 2. 닉네임
+                        user.getNickname(), // 2. 닉네임
                         user.getMajor() != null ? user.getMajor() : "미등록" // 3. 전공
                 ))
                 .collect(Collectors.toList());
