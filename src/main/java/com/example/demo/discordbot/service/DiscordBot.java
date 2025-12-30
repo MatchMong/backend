@@ -29,7 +29,8 @@ public class DiscordBot extends ListenerAdapter {
     public void startBot() throws LoginException {
         jda = JDABuilder.createDefault(bottoken,
                         GatewayIntent.GUILD_MESSAGES,
-                        GatewayIntent.GUILD_MEMBERS)
+                        GatewayIntent.GUILD_MEMBERS,
+                        GatewayIntent.DIRECT_MESSAGES)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .addEventListeners(this)
                 .build();
@@ -76,7 +77,9 @@ public class DiscordBot extends ListenerAdapter {
     }
 
     public void sendDM(String userId, String message) {
-        if (userId == null || userId.isBlank()) {
+        System.out.println("DEBUG: DM 전송 시도 대상 ID -> " + userId); // 이 로그를 추가하세요.
+
+        if (userId == null || userId.isBlank() || userId.equals("0")) {
             System.out.println("에러: 유저 ID가 비어있습니다.");
             return;
         }
