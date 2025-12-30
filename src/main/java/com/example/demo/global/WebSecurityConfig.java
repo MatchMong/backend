@@ -71,7 +71,8 @@ public class WebSecurityConfig {
         configuration.setAllowedOriginPatterns(List.of(
                 "http://localhost:3000",
                 "http://127.0.0.1:3000",
-                "https://*.cloudtype.app" // 나중에 프론트 배포 대비
+                "https://*.cloudtype.app",
+                "https://frontend-delta-nine-50.vercel.app"// 나중에 프론트 배포 대비
         ));
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
