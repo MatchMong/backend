@@ -29,13 +29,14 @@ public class UserService {
     public Long save(AddUserRequest dto) {
 
         String snowflakeId = discordBot.getUserIdByName(dto.getDiscordId());
+        String realDiscordNickname = discordBot.getNicknameByDiscordId(snowflakeId);
 
         return userRepository.save(User.builder()
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .discordId(dto.getDiscordId())
                 .nickname(dto.getNickname())
-                .nicknameid(snowflakeId)
+                .nicknameid(realDiscordNickname)
                 .build()).getId();
     }
 

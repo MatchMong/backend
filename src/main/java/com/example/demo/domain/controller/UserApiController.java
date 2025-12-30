@@ -109,7 +109,7 @@ public class UserApiController {
 
     private final DiscordBot discordBot;
     @GetMapping("/api/users/profiles")
-    public ResponseEntity<List<UserProfileResponse>> getAllUserProfiles(@AuthenticationPrincipal User loginUser) {
+    public ResponseEntity<List<UserProfileResponse>> getAllUserProfiles() {
                 List<UserProfileResponse> profiles = userService.findAllUsers().stream()
                 .map(user -> new UserProfileResponse(
                         user.getId(),       // 1. ID
